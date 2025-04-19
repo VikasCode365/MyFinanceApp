@@ -1,12 +1,41 @@
-# React + Vite
+# Title: monify  
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project is part of Envisage Hackathon [Hack ur Way]
 
-Currently, two official plugins are available:
+A personal finance assistant app designed for students like Priya ,working individual to manage their limited budgets.
+It helps track expenses, set savings goals (like buying concert tickets), categorize spending, and 
+offers smart money-saving tips and alerts—making budgeting simple, smart, and stress-free.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## This project uses MERN stack technologies
 
-## Expanding the ESLint configuration
+Here are React modules we use 
+PieChart, LineChart, BarChart: Containers for rendering pie, line, and bar charts respectively.
+Pie, Line, Bar: Actual chart data representations inside the respective chart types.
+Cell: Allows custom rendering of chart segments (e.g., custom colors).
+XAxis, YAxis: Axes for charts.
+CartesianGrid: Adds grid lines to charts.
+Tooltip: Displays data info on hover.
+Legend: Shows a legend explaining the chart’s data keys.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+#To run this Prototype 
+prerequsite node.js should be installed
+in terminal run following command
+<br>
+S1: npm install
+<br>
+S2: npm run dev
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
