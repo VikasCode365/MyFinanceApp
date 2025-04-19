@@ -6,7 +6,7 @@ A personal finance assistant app designed for students like Priya ,working indiv
 It helps track expenses, set savings goals (like buying concert tickets), categorize spending, and 
 offers smart money-saving tips and alerts—making budgeting simple, smart, and stress-free.
 
-## This project uses React , vite , Express , Monogodb technologies
+## This project uses MERN stack technologies
 
 Here are React modules we use 
 PieChart, LineChart, BarChart: Containers for rendering pie, line, and bar charts respectively.
@@ -18,6 +18,8 @@ Tooltip: Displays data info on hover.
 Legend: Shows a legend explaining the chart’s data keys.
 
 #To run this Prototype 
+prerequsite node.js should be installed
+in terminal run following command
 S1: npm install
 S2: npm run dev
 
