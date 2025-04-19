@@ -17,6 +17,10 @@ CartesianGrid: Adds grid lines to charts.
 Tooltip: Displays data info on hover.
 Legend: Shows a legend explaining the chart’s data keys.
 
+#To run this Prototype 
+S1: npm install
+S2: npm run dev
+
 
 
 
