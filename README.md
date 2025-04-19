@@ -20,7 +20,9 @@ Legend: Shows a legend explaining the chart’s data keys.
 #To run this Prototype 
 prerequsite node.js should be installed
 in terminal run following command
+<br>
 S1: npm install
+<br>
 S2: npm run dev
 
 
