@@ -1,6 +1,6 @@
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import TransactionTable from './TransactionTable';
-import { PlusCircle, Coffee, ShoppingBag, Music, CreditCard, Home, Plane, Gift, Utensils, Car, Book, Dumbbell, Film, Headphones } from 'lucide-react';
+import { PlusCircle, Coffee, ShoppingBag, Music, CreditCard, Home, Plane, Gift, Utensils, Car, Book, Dumbbell, Film, Headphones, ChevronDown, Download, Upload } from 'lucide-react';
 
 const TransactionsTab = ({
   activeBudgetPeriod,
@@ -20,6 +20,8 @@ const TransactionsTab = ({
   handleAddCategory,
   isDarkMode
 }) => {
+  const [showActionMenu, setShowActionMenu] = useState(false);
+  
   const availableIcons = [
     { name: 'Coffee', component: <Coffee /> },
     { name: 'ShoppingBag', component: <ShoppingBag /> },
@@ -35,6 +37,14 @@ const TransactionsTab = ({
     { name: 'Film', component: <Film /> },
     { name: 'Headphones', component: <Headphones /> },
   ];
+  
+  const selectNoArrowStyle = {
+    WebkitAppearance: 'none',
+    MozAppearance: 'none',
+    appearance: 'none',
+    backgroundImage: 'none',
+    paddingRight: '0.75rem'
+  };
 
   const availableColors = [
     { name: 'Green', value: '#10b981' },
@@ -109,11 +119,75 @@ const TransactionsTab = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      {/* Header Section - Mobile Responsive */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <h2 className="text-xl font-bold text-gray-900 dark:text-white">Transactions</h2>
-        <div className="flex items-center space-x-2">
+        
+        {/* Mobile: Dropdown for Actions */}
+        <div className="flex flex-col w-full sm:hidden">
+          <div className="flex justify-between w-full">
+            <select
+              style={selectNoArrowStyle}
+              className="p-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 appearance-none"
+              value={activeBudgetPeriod}
+              onChange={(e) => setActiveBudgetPeriod(e.target.value)}
+            >
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+            <button
+              className="flex items-center justify-center bg-indigo-600 dark:bg-indigo-700 text-white px-4 py-2 rounded-lg add-transaction-btn"
+              onClick={() => setShowActionMenu(!showActionMenu)}
+            >
+              Actions <ChevronDown className="ml-1 h-4 w-4" />
+            </button>
+          </div>
+          
+          {showActionMenu && (
+            <div className="mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-2 flex flex-col w-full">
+              <button
+                onClick={() => {
+                  setShowAddTransaction(!showAddTransaction);
+                  setShowActionMenu(false);
+                }}
+                className="flex items-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md w-full text-left"
+              >
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Add Transaction
+              </button>
+              <button
+                onClick={() => {
+                  exportToCSV();
+                  setShowActionMenu(false);
+                }}
+                className="flex items-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md w-full text-left"
+              >
+                <Download className="mr-2 h-4 w-4" />
+                Export CSV
+              </button>
+              <label className="flex items-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md w-full text-left cursor-pointer">
+                <Upload className="mr-2 h-4 w-4" />
+                Import CSV
+                <input
+                  type="file"
+                  accept=".csv"
+                  onChange={(e) => {
+                    importFromCSV(e);
+                    setShowActionMenu(false);
+                  }}
+                  className="hidden"
+                />
+              </label>
+            </div>
+          )}
+        </div>
+        
+        {/* Desktop: Inline Actions */}
+        <div className="hidden sm:flex items-center space-x-2">
           <select
-            className="p-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
+            style={selectNoArrowStyle}
+            className="p-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 appearance-none"
             value={activeBudgetPeriod}
             onChange={(e) => setActiveBudgetPeriod(e.target.value)}
           >
@@ -146,6 +220,7 @@ const TransactionsTab = ({
         </div>
       </div>
 
+      {/* Add Transaction Form - Mobile Responsive */}
       {showAddTransaction && (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-4">
           <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-white">Add New Transaction</h3>
@@ -222,7 +297,7 @@ const TransactionsTab = ({
           {isAddingCategory && (
             <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
               <h4 className="font-medium mb-3 text-gray-900 dark:text-white">Create New Category</h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category Name</label>
                   <input
@@ -264,8 +339,8 @@ const TransactionsTab = ({
                   </div>
                 </div>
               </div>
-              <div className="mt-3 flex items-center space-x-2">
-                <span className="mr-2 text-gray-900 dark:text-white">Preview:</span>
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <span className="text-gray-900 dark:text-white">Preview:</span>
                 <div className="p-2 bg-white dark:bg-gray-800 rounded-full shadow">
                   {React.cloneElement(
                     availableIcons.find(icon => icon.name === newCategory.icon)?.component || availableIcons[0].component,
@@ -310,6 +385,7 @@ const TransactionsTab = ({
         </div>
       )}
 
+      {/* Transactions Table - Mobile Responsive via ScrollX */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
         {filteredTransactions.length === 0 ? (
           <div className="p-8 text-center">

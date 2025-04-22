@@ -6,7 +6,7 @@ import { loadState, saveState } from '../utils/storage';
 
 import { PlusCircle, Wallet, CreditCard, Coffee, ShoppingBag, Music, AlertCircle, 
          TrendingUp, ChevronDown, ChevronUp, Home, Plane, Gift, Utensils, 
-         Car, Book, Dumbbell, Film, Headphones, Moon, Sun } from 'lucide-react';
+         Car, Book, Dumbbell, Film, Headphones, Moon, Sun, Menu, X } from 'lucide-react';
 
 const DashboardTab = lazy(() => import('../components/DashboardTab'));
 const TransactionsTab = lazy(() => import('../components/TransactionsTab'));
@@ -142,6 +142,8 @@ export default function FinanceApp({ setIsAuthenticated }) {
   const [newCategory, setNewCategory] = useState({ name: '', color: '#10b981', icon: 'Coffee' });
   const [showEditBudgets, setShowEditBudgets] = useState(false);
   const [editBudgets, setEditBudgets] = useState(budgets);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [headerExpanded, setHeaderExpanded] = useState(false);
 
   // Dark Mode Effect
   useEffect(() => {
@@ -189,6 +191,11 @@ export default function FinanceApp({ setIsAuthenticated }) {
   useEffect(() => saveState('budgets', budgets), [budgets]);
   useEffect(() => saveState('categoryBudgets', categoryBudgets), [categoryBudgets]);
   useEffect(() => saveState('achievements', achievements), [achievements]);
+
+  // Close mobile menu when tab changes
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [activeTab]);
 
   // Memoized Helper Functions
   const getFilteredTransactions = useCallback((period) => {
@@ -503,64 +510,149 @@ export default function FinanceApp({ setIsAuthenticated }) {
     toast.success('Reset to demo mode!');
   }, [setTransactions, setCategories, setGoals, setBalance, setBudgets, setCategoryBudgets, setAchievements, setIsDarkMode, initialTransactions, initialCategories, initialGoals]);
 
+  // Toggle header expanded state on mobile
+  const toggleHeaderExpanded = () => {
+    setHeaderExpanded(prev => !prev);
+  };
+
   // Render
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 w-full">
+      {/* Mobile header */}
       <header className="bg-indigo-600 dark:bg-indigo-900 text-white p-4">
-        <div className="flex justify-between items-center">
-          <h1 className="text-xl font-bold flex items-center">
-            <img
-              src="/po.png"
-              alt="Company Logo"
-              className="h-10 w-auto invert opacity-100 ml-2 mr-0.5"
-            /> <span className='opacity-80'>Monify</span>
-          </h1>
-          <div className="flex items-center space-x-4">
-            <div className="text-right">
-              <p className="text-sm opacity-80">
-                {activeBudgetPeriod.charAt(0).toUpperCase() + activeBudgetPeriod.slice(1)} Available Balance
-              </p>
-              <div className="flex items-center">
-                <Wallet className="mr-2" />
-                <p className="text-xl font-bold">₹{remainingBudget.toFixed(2)}</p>
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center">
+          <div className="flex justify-between items-center w-full">
+            <h1 className="text-xl font-bold flex items-center">
+              <img
+                src="/po.png"
+                alt="Company Logo"
+                className="h-8 w-auto invert opacity-100 mr-2"
+              /> 
+              <span className='opacity-80'>Monify</span>
+            </h1>
+            
+            <div className="flex items-center space-x-2 md:hidden">
+              <button
+                onClick={toggleHeaderExpanded}
+                className="p-1 rounded-full hover:bg-indigo-700"
+              >
+                {headerExpanded ? <ChevronUp /> : <ChevronDown />}
+              </button>
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-1 rounded-full hover:bg-indigo-700"
+              >
+                {mobileMenuOpen ? <X /> : <Menu />}
+              </button>
+            </div>
+            
+            <div className="hidden md:flex md:items-center md:space-x-4">
+              <div className="text-right">
+                <p className="text-sm opacity-80">
+                  {activeBudgetPeriod.charAt(0).toUpperCase() + activeBudgetPeriod.slice(1)} Available Balance
+                </p>
+                <div className="flex items-center">
+                  <Wallet className="mr-2" />
+                  <p className="text-xl font-bold">₹{remainingBudget.toFixed(2)}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsDarkMode(prev => !prev)}
+                className="bg-gray-200 dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 px-3 py-1 rounded-lg flex items-center"
+              >
+                {isDarkMode ? <Sun className="mr-1 h-4 w-4" /> : <Moon className="mr-1 h-4 w-4" />}
+                <span className="hidden md:inline">{isDarkMode ? 'Light' : 'Dark'}</span>
+              </button>
+              <button
+                onClick={async () => {
+                  await signOut(auth);
+                  toast.success('Logged out successfully!');
+                  setIsAuthenticated(false);
+                }}
+                className="bg-white dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 px-3 py-1 rounded-lg"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+          
+          {/* Mobile expanded header content */}
+          {headerExpanded && (
+            <div className="mt-4 flex flex-col space-y-4 md:hidden">
+              <div className="text-center">
+                <p className="text-sm opacity-80">
+                  {activeBudgetPeriod.charAt(0).toUpperCase() + activeBudgetPeriod.slice(1)} Available Balance
+                </p>
+                <div className="flex items-center justify-center">
+                  <Wallet className="mr-2" />
+                  <p className="text-xl font-bold">₹{remainingBudget.toFixed(2)}</p>
+                </div>
+              </div>
+              <div className="flex justify-center space-x-3">
+                <button
+                  onClick={() => setIsDarkMode(prev => !prev)}
+                  className="bg-gray-200 dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 px-3 py-2 rounded-lg flex items-center"
+                >
+                  {isDarkMode ? <Sun className="mr-1 h-4 w-4" /> : <Moon className="mr-1 h-4 w-4" />}
+                  {isDarkMode ? 'Light' : 'Dark'}
+                </button>
+                <button
+                  onClick={async () => {
+                    await signOut(auth);
+                    toast.success('Logged out successfully!');
+                    setIsAuthenticated(false);
+                  }}
+                  className="bg-white dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 px-3 py-2 rounded-lg"
+                >
+                  Logout
+                </button>
               </div>
             </div>
-            <button
-              onClick={() => setIsDarkMode(prev => !prev)}
-              className="bg-gray-200 dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 px-3 py-1 rounded-lg flex items-center"
-            >
-              {isDarkMode ? <Sun className="mr-1 h-4 w-4" /> : <Moon className="mr-1 h-4 w-4" />}
-              {isDarkMode ? 'Light' : 'Dark'}
-            </button>
-            <button
-              onClick={async () => {
-                await signOut(auth);
-                toast.success('Logged out successfully!');
-                setIsAuthenticated(false);
-              }}
-              className="bg-white dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 px-3 py-1 rounded-lg"
-            >
-              Logout
-            </button>
-          </div>
+          )}
         </div>
       </header>
 
-      <nav className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 p-2">
-        <div className="flex justify-between">
+      {/* Mobile Navigation Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden bg-white dark:bg-gray-800 border-b dark:border-gray-700">
+          <div className="flex flex-col">
+            {['dashboard', 'transactions', 'goals', 'insights'].map(tab => (
+              <button
+                key={tab}
+                className={`px-4 py-3 text-left ${
+                  activeTab === tab 
+                    ? 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-gray-700 font-medium' 
+                    : 'text-gray-700 dark:text-gray-300'
+                }`}
+                onClick={() => {
+                  setActiveTab(tab);
+                  setMobileMenuOpen(false);
+                }}
+              >
+                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Desktop navigation */}
+      <nav className="hidden md:block bg-white dark:bg-gray-800 border-b dark:border-gray-700 p-2">
+        <div className="flex justify-between max-w-4xl mx-auto">
           {['dashboard', 'transactions', 'goals', 'insights'].map(tab => (
             <button
               key={tab}
               className={`px-4 py-2 ${activeTab === tab ? 'text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400 font-medium' : 'text-gray-500 dark:text-gray-400'}`}
               onClick={() => setActiveTab(tab)}
-            >
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
-            </button>
+              
+              
+            >{tab.charAt(0).toUpperCase() + tab.slice(1)}</button>
+           
           ))}
         </div>
       </nav>
 
-      <main className="flex-1 overflow-y-auto p-4">
+      <main className="flex-1 overflow-y-auto p-2 sm:p-4">
         <Suspense fallback={<div className="text-center p-4">Loading...</div>}>
           {activeTab === 'dashboard' && (
             <DashboardTab
@@ -638,8 +730,9 @@ export default function FinanceApp({ setIsAuthenticated }) {
       </main>
 
       <footer className="bg-white dark:bg-gray-800 border-t dark:border-gray-700 p-2 text-center text-gray-500 dark:text-gray-400 text-sm">
-        <div className="flex justify-between items-center max-w-4xl mx-auto">
-          <p>Monify - Helping students manage money smarter</p>
+        <div className="flex flex-col sm:flex-row justify-between items-center max-w-4xl mx-auto">
+          <p className="mb-2 sm:mb-0">Monify - Money made simplify</p>
+          <p className="mb-2 sm:mb-0  sm:block">Made with ❤ by Vikas</p> 
           <button
             onClick={resetToDemo}
             className="text-indigo-600 dark:text-indigo-400 hover:underline"
@@ -648,6 +741,26 @@ export default function FinanceApp({ setIsAuthenticated }) {
           </button>
         </div>
       </footer>
+
+      {/* Floating Action Button for mobile devices */}
+      <div className="md:hidden fixed bottom-6 right-6">
+        {activeTab === 'transactions' && (
+          <button
+            onClick={() => setShowAddTransaction(true)}
+            className="bg-indigo-600 text-white p-3 rounded-full shadow-lg"
+          >
+            <PlusCircle className="h-6 w-6" />
+          </button>
+        )}
+        {activeTab === 'goals' && (
+          <button
+            onClick={() => setShowAddGoal(true)}
+            className="bg-indigo-600 text-white p-3 rounded-full shadow-lg"
+          >
+            <PlusCircle className="h-6 w-6" />
+          </button>
+        )}
+      </div>
     </div>
   );
 }
