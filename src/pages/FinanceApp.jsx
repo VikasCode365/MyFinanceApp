@@ -4,7 +4,9 @@ import { signOut } from 'firebase/auth';
 import { toast } from 'react-toastify';
 import { loadState, saveState } from '../utils/storage';
 
-import { PlusCircle, Wallet, CreditCard, Coffee, ShoppingBag, Music, AlertCircle, TrendingUp, ChevronDown, ChevronUp, Home, Plane, Gift, Utensils, Car, Book, Dumbbell, Film, Headphones, Moon, Sun } from 'lucide-react';
+import { PlusCircle, Wallet, CreditCard, Coffee, ShoppingBag, Music, AlertCircle, 
+         TrendingUp, ChevronDown, ChevronUp, Home, Plane, Gift, Utensils, 
+         Car, Book, Dumbbell, Film, Headphones, Moon, Sun } from 'lucide-react';
 
 const DashboardTab = lazy(() => import('../components/DashboardTab'));
 const TransactionsTab = lazy(() => import('../components/TransactionsTab'));
@@ -12,12 +14,30 @@ const GoalsTab = lazy(() => import('../components/GoalsTab'));
 const InsightsTab = lazy(() => import('../components/InsightsTab'));
 
 export default function FinanceApp({ setIsAuthenticated }) {
-  // Initial sample data
+  // Define icon components for reference
+  const iconComponents = {
+    Coffee,
+    ShoppingBag,
+    Music,
+    CreditCard,
+    Home,
+    Plane,
+    Gift,
+    Utensils,
+    Car, 
+    Book,
+    Dumbbell,
+    Film,
+    Headphones,
+    AlertCircle
+  };
+
+  // Initial sample data with direct icon references
   const initialCategories = [
-    { id: 1, name: 'Food', icon: 'Coffee', color: '#f97316' },
-    { id: 2, name: 'Shopping', icon: 'ShoppingBag', color: '#3b82f6' },
-    { id: 3, name: 'Entertainment', icon: 'Music', color: '#a855f7' },
-    { id: 4, name: 'Bills', icon: 'CreditCard', color: '#ef4444' },
+    { id: 1, name: 'Food', icon: <Coffee className="text-orange-500" />, color: '#f97316', iconName: 'Coffee' },
+    { id: 2, name: 'Shopping', icon: <ShoppingBag className="text-blue-500" />, color: '#3b82f6', iconName: 'ShoppingBag' },
+    { id: 3, name: 'Entertainment', icon: <Music className="text-purple-500" />, color: '#a855f7', iconName: 'Music' },
+    { id: 4, name: 'Bills', icon: <CreditCard className="text-red-500" />, color: '#ef4444', iconName: 'CreditCard' },
   ];
 
   const initialTransactions = [
@@ -32,63 +52,36 @@ export default function FinanceApp({ setIsAuthenticated }) {
     { id: 1, name: 'Concert ticket', target: 150, saved: 50, deadline: '2025-06-30' },
   ];
 
-  // Icon mapping for rendering
-  const iconMap = {
-    Coffee: <Coffee className="text-orange-500" />,
-    ShoppingBag: <ShoppingBag className="text-blue-500" />,
-    Music: <Music className="text-purple-500" />,
-    CreditCard: <CreditCard className="text-red-500" />,
-    Home: <Home className="text-green-500" />,
-    Plane: <Plane className="text-teal-500" />,
-    Gift: <Gift className="text-pink-500" />,
-    Utensils: <Utensils className="text-yellow-500" />,
-    Car: <Car className="text-indigo-500" />,
-    Book: <Book className="text-purple-500" />,
-    Dumbbell: <Dumbbell className="text-red-500" />,
-    Film: <Film className="text-blue-500" />,
-    Headphones: <Headphones className="text-green-500" />,
-  };
-
-  // Available icons and colors for category creation
+  // Define available icons for selection in the UI
   const availableIcons = [
-    { name: 'Coffee', component: <Coffee /> },
-    { name: 'ShoppingBag', component: <ShoppingBag /> },
-    { name: 'Music', component: <Music /> },
-    { name: 'CreditCard', component: <CreditCard /> },
-    { name: 'Home', component: <Home /> },
-    { name: 'Plane', component: <Plane /> },
-    { name: 'Gift', component: <Gift /> },
-    { name: 'Utensils', component: <Utensils /> },
-    { name: 'Car', component: <Car /> },
-    { name: 'Book', component: <Book /> },
-    { name: 'Dumbbell', component: <Dumbbell /> },
-    { name: 'Film', component: <Film /> },
-    { name: 'Headphones', component: <Headphones /> },
+    { name: "Coffee", component: Coffee },
+    { name: "ShoppingBag", component: ShoppingBag },
+    { name: "Music", component: Music },
+    { name: "CreditCard", component: CreditCard },
+    { name: "Home", component: Home },
+    { name: "Plane", component: Plane },
+    { name: "Gift", component: Gift },
+    { name: "Utensils", component: Utensils },
+    { name: "Car", component: Car },
+    { name: "Book", component: Book },
+    { name: "Dumbbell", component: Dumbbell },
+    { name: "Film", component: Film },
+    { name: "Headphones", component: Headphones }
   ];
 
-  const availableColors = [
-    { name: 'Green', value: '#10b981' },
-    { name: 'Blue', value: '#3b82f6' },
-    { name: 'Red', value: '#ef4444' },
-    { name: 'Orange', value: '#f97316' },
-    { name: 'Purple', value: '#a855f7' },
-    { name: 'Pink', value: '#ec4899' },
-    { name: 'Yellow', value: '#eab308' },
-    { name: 'Teal', value: '#14b8a6' },
-  ];
-
-  const getColorClass = (hexColor) => {
+  // Color mapping function
+  const getColorClass = (colorHex) => {
     const colorMap = {
-      '#10b981': 'green-500',
-      '#3b82f6': 'blue-500',
-      '#ef4444': 'red-500',
       '#f97316': 'orange-500',
+      '#3b82f6': 'blue-500',
       '#a855f7': 'purple-500',
+      '#ef4444': 'red-500',
+      '#10b981': 'emerald-500',
+      '#f59e0b': 'amber-500',
       '#ec4899': 'pink-500',
-      '#eab308': 'yellow-500',
       '#14b8a6': 'teal-500',
     };
-    return colorMap[hexColor] || 'gray-500';
+    return colorMap[colorHex] || 'gray-500';
   };
 
   // States
@@ -99,9 +92,26 @@ export default function FinanceApp({ setIsAuthenticated }) {
   });
   const [transactions, setTransactions] = useState(loadState('transactions', initialTransactions));
   const [categories, setCategories] = useState(() => {
-    const saved = loadState('categories', initialCategories);
-    return saved.map(cat => ({ ...cat, icon: iconMap[cat.icon.props?.name || cat.icon] || iconMap['Coffee'] }));
+    // Initialize categories and ensure each has an iconName property
+    const savedCategories = loadState('categories', initialCategories);
+    
+    // If loading saved categories that don't have iconName, add it
+    return savedCategories.map(category => {
+      if (!category.iconName) {
+        // Try to determine iconName from existing categories or default to Coffee
+        let iconName = 'Coffee';
+        for (const initialCat of initialCategories) {
+          if (initialCat.name === category.name) {
+            iconName = initialCat.iconName;
+            break;
+          }
+        }
+        return { ...category, iconName };
+      }
+      return category;
+    });
   });
+  
   const [goals, setGoals] = useState(loadState('goals', initialGoals));
   const [balance, setBalance] = useState(loadState('balance', 350));
   const [budgets, setBudgets] = useState(loadState('budgets', {
@@ -146,9 +156,34 @@ export default function FinanceApp({ setIsAuthenticated }) {
     document.documentElement.classList.toggle('dark', saved);
   }, []);
 
+  // Function to refresh icon components in categories
+  // This is necessary because the icons don't serialize properly in localStorage
+  const refreshCategoryIcons = useCallback(() => {
+    return categories.map(category => {
+      const IconComponent = iconComponents[category.iconName] || Coffee;
+      const colorClass = getColorClass(category.color);
+      return {
+        ...category,
+        icon: <IconComponent className={`text-${colorClass}`} />
+      };
+    });
+  }, [categories]);
+
+  // Apply the refreshed icons whenever the component renders or categories change
+  useEffect(() => {
+    const refreshedCategories = refreshCategoryIcons();
+    if (JSON.stringify(refreshedCategories.map(c => c.id)) !== JSON.stringify(categories.map(c => c.id))) {
+      setCategories(refreshedCategories);
+    }
+  }, [refreshCategoryIcons, categories]);
+
   // Persist States
   useEffect(() => saveState('transactions', transactions), [transactions]);
-  useEffect(() => saveState('categories', categories.map(cat => ({ id: cat.id, name: cat.name, icon: cat.icon.type.name, color: cat.color }))), [categories]);
+  useEffect(() => {
+    // Save categories without the icon property to avoid serialization issues
+    const categoriesToSave = categories.map(({ icon, ...rest }) => rest);
+    saveState('categories', categoriesToSave);
+  }, [categories]);
   useEffect(() => saveState('goals', goals), [goals]);
   useEffect(() => saveState('balance', balance), [balance]);
   useEffect(() => saveState('budgets', budgets), [budgets]);
@@ -328,6 +363,12 @@ export default function FinanceApp({ setIsAuthenticated }) {
     return insights;
   }, [filteredTransactions, remainingBudget, activeBudgetPeriod, activeBudget, categories, categoryBudgets, goals]);
 
+  // Helpers to get category icon for transaction display
+  const getCategoryIcon = useCallback((categoryName) => {
+    const category = categories.find(c => c.name === categoryName);
+    return category ? category.icon : <Coffee className="text-gray-500" />;
+  }, [categories]);
+
   // Handlers
   const handleAddTransaction = useCallback(() => {
     if (!newTransaction.amount || parseFloat(newTransaction.amount) <= 0) {
@@ -402,12 +443,17 @@ export default function FinanceApp({ setIsAuthenticated }) {
       return;
     }
 
-    const selectedIcon = availableIcons.find(icon => icon.name === newCategory.icon);
+    // Find the icon component
+    const IconComponent = iconComponents[newCategory.icon] || Coffee;
+    const colorClass = getColorClass(newCategory.color);
+    
+    // Create new category with icon and iconName
     const category = {
       id: categories.length + 1,
       name: newCategory.name,
-      icon: <selectedIcon.component.type className={`text-${getColorClass(newCategory.color)}`} />,
+      icon: <IconComponent className={`text-${colorClass}`} />,
       color: newCategory.color,
+      iconName: newCategory.icon || 'Coffee',
     };
 
     setCategories(prev => [...prev, category]);
@@ -421,7 +467,7 @@ export default function FinanceApp({ setIsAuthenticated }) {
     setNewCategory({ name: '', color: '#10b981', icon: 'Coffee' });
     setNewTransaction(prev => ({ ...prev, category: category.name }));
     toast.success('Category added!');
-  }, [newCategory, categories, setCategories, setCategoryBudgets]);
+  }, [newCategory, categories, setCategories, setCategoryBudgets, iconComponents]);
 
   const handleSaveBudgets = useCallback(() => {
     if (
@@ -443,7 +489,7 @@ export default function FinanceApp({ setIsAuthenticated }) {
 
   const resetToDemo = useCallback(() => {
     setTransactions(initialTransactions);
-    setCategories(initialCategories.map(cat => ({ ...cat, icon: iconMap[cat.icon] })));
+    setCategories(initialCategories);
     setGoals(initialGoals);
     setBalance(350);
     setBudgets({ weekly: 150, monthly: 500, yearly: 6000 });
@@ -455,7 +501,7 @@ export default function FinanceApp({ setIsAuthenticated }) {
     setAchievements([]);
     setIsDarkMode(false);
     toast.success('Reset to demo mode!');
-  }, [setTransactions, setCategories, setGoals, setBalance, setBudgets, setCategoryBudgets, setAchievements, setIsDarkMode]);
+  }, [setTransactions, setCategories, setGoals, setBalance, setBudgets, setCategoryBudgets, setAchievements, setIsDarkMode, initialTransactions, initialCategories, initialGoals]);
 
   // Render
   return (
@@ -537,6 +583,7 @@ export default function FinanceApp({ setIsAuthenticated }) {
               handleSaveBudgets={handleSaveBudgets}
               isDarkMode={isDarkMode}
               setActiveTab={setActiveTab}
+              getCategoryIcon={getCategoryIcon}
             />
           )}
           {activeTab === 'transactions' && (
@@ -558,7 +605,8 @@ export default function FinanceApp({ setIsAuthenticated }) {
               handleAddCategory={handleAddCategory}
               isDarkMode={isDarkMode}
               availableIcons={availableIcons}
-              getColorClass={getColorClass}
+              getCategoryIcon={getCategoryIcon}
+              iconComponents={iconComponents}
             />
           )}
           {activeTab === 'goals' && (
@@ -583,6 +631,7 @@ export default function FinanceApp({ setIsAuthenticated }) {
               setShowTips={setShowTips}
               isDarkMode={isDarkMode}
               filteredTransactions={filteredTransactions}
+              getCategoryIcon={getCategoryIcon}
             />
           )}
         </Suspense>

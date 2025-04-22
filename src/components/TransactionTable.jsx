@@ -1,7 +1,14 @@
 import { useState } from 'react';
-import { toast } from 'react-toastify';
+import { Trash2 } from 'lucide-react';
 
-function TransactionTable({ transactions, categories, handleDeleteTransaction, activeBudgetPeriod, isDarkMode }) {
+function TransactionTable({ 
+  transactions, 
+  categories, 
+  handleDeleteTransaction, 
+  activeBudgetPeriod, 
+  isDarkMode,
+  renderCategoryIcon // This is the new prop we're receiving from parent
+}) {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
 
@@ -11,9 +18,27 @@ function TransactionTable({ transactions, categories, handleDeleteTransaction, a
     (categoryFilter ? t.category === categoryFilter : true)
   );
 
+  // Function to render icon if renderCategoryIcon is passed, otherwise use a text fallback
+  const renderCategoryWithIcon = (categoryName) => {
+    const category = categories.find(c => c.name === categoryName);
+    
+    if (!category) {
+      return <span>{categoryName}</span>;
+    }
+    
+    return (
+      <div className="flex items-center">
+        <div className="flex items-center justify-center">
+          {category.icon}
+        </div>
+        <span className="ml-2">{categoryName}</span>
+      </div>
+    );
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
-      {filtered.length === 0 ? (
+      {transactions.length === 0 ? (
         <div className="p-8 text-center">
           <p className="text-gray-500 dark:text-gray-400">No transactions for this period. Add one to get started!</p>
         </div>
@@ -57,16 +82,13 @@ function TransactionTable({ transactions, categories, handleDeleteTransaction, a
                   >
                     <td className="p-4">{transaction.description}</td>
                     <td className="p-4">
-                      <div className="flex items-center">
-                        {categories.find(c => c.name === transaction.category)?.icon}
-                        <span className="ml-2">{transaction.category}</span>
-                      </div>
+                      {renderCategoryWithIcon(transaction.category)}
                     </td>
                     <td className="p-4">{transaction.date}</td>
                     <td
                       className={`p-4 text-right font-medium ${transaction.isIncome ? 'text-green-500' : 'text-red-500'}`}
                     >
-                      {transaction.isIncome ? '+' : '-'}₹{transaction.amount.toFixed(2)}
+                      {transaction.isIncome ? '+' : '-'}₹{parseFloat(transaction.amount).toFixed(2)}
                     </td>
                     <td className="p-4 text-right">
                       <button
@@ -74,21 +96,7 @@ function TransactionTable({ transactions, categories, handleDeleteTransaction, a
                         className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                         title="Delete transaction"
                       >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M3 6h18"></path>
-                          <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                          <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                        </svg>
+                        <Trash2 size={16} />
                       </button>
                     </td>
                   </tr>
